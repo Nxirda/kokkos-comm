@@ -12,11 +12,11 @@ namespace Impl {
 
 /// Fallback: most types are not a KokkosComm communication space
 template <typename T>
-struct is_communication_space : public std::false_type {};
+inline constexpr bool is_communication_space_v = false;
 
 /// Fallback: most types are not a KokkosComm reduction operator
 template <typename T>
-struct is_reduction_operator : public std::false_type {};
+inline constexpr bool is_reduction_operator_v = false;
 
 }  // namespace Impl
 
@@ -34,7 +34,7 @@ concept KokkosMemorySpace = Kokkos::is_memory_space_v<T>;
 
 template <typename T>
 concept CommunicationSpace = requires {
-  KokkosComm::Impl::is_communication_space<T>::value;
+  KokkosComm::Impl::is_communication_space_v<T>;
   typename T::communication_space;
   typename T::communicator_type;
   typename T::request_type;
@@ -45,6 +45,6 @@ concept CommunicationSpace = requires {
 };
 
 template <typename T>
-concept ReductionOperator = KokkosComm::Impl::is_reduction_operator<T>::value;
+concept ReductionOperator = KokkosComm::Impl::is_reduction_operator_v<T>;
 
 }  // namespace KokkosComm

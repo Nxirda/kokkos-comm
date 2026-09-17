@@ -15,15 +15,17 @@
 namespace KokkosComm::Impl {
 
 template <KokkosView View>
-struct contiguous_view {
-  using type = Kokkos::View<
+using contiguous_view_t = Kokkos::View<
       typename View::non_const_data_type,
       typename View::execution_space::array_layout,
       typename View::memory_space>;
-};
 
-template <KokkosView View>
-using contiguous_view_t = contiguous_view<View>::type;
+template <typename Exec, typename View, std::size_t... I>
+auto allocate_contiguous_for_impl(const Exec& exec, const std::string& label, const View& v, std::index_sequence<I...>) 
+-> contiguous_view_t<View> 
+{
+  return contiguous_view_t<View>(Kokkos::view_alloc(exec, Kokkos::WithoutInitializing, label), v.extent(Is)...);
+}
 
 /// @brief Allocate a contiguous View suitable for packing a non-contiguous View.
 /// @tparam Exec A Kokkos Execution Space type.
@@ -34,10 +36,7 @@ using contiguous_view_t = contiguous_view<View>::type;
 template <KokkosExecutionSpace Exec, KokkosView View>
 auto allocate_contiguous_for(const Exec& exec, const std::string& label, const View& v) -> contiguous_view_t<View> {
   // Unpack `v` extents into the `ContigView` constructor
-  return [&label, &exec, &v ]<size_t... Is>(std::index_sequence<Is...>) {
-    return contiguous_view_t<View>(Kokkos::view_alloc(exec, Kokkos::WithoutInitializing, label), v.extent(Is)...);
-  }
-  (std::make_index_sequence<rank<View>()>{});
+  return allocate_contiguous_for_impl(exec, label, v, std::make_index_sequence<rank<View>()>{});
 }
 
 }  // namespace KokkosComm::Impl
