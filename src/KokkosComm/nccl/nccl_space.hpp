@@ -28,6 +28,6 @@ struct NcclSpace {
 
 // KokkosComm::NcclSpace is a KokkosComm::CommunicationSpace
 template <>
-struct Impl::is_communication_space<Experimental::NcclSpace> : public std::true_type {};
+inline constexpr bool Impl::is_communication_space_v<Experimental::NcclSpace> = true;
 
 }  // namespace KokkosComm
