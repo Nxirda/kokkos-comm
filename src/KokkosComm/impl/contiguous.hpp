@@ -24,7 +24,7 @@ template <typename Exec, typename View, std::size_t... I>
 auto allocate_contiguous_for_impl(const Exec& exec, const std::string& label, const View& v, std::index_sequence<I...>) 
 -> contiguous_view_t<View> 
 {
-  return contiguous_view_t<View>(Kokkos::view_alloc(exec, Kokkos::WithoutInitializing, label), v.extent(Is)...);
+  return contiguous_view_t<View>(Kokkos::view_alloc(exec, Kokkos::WithoutInitializing, label), v.extent(I)...);
 }
 
 /// @brief Allocate a contiguous View suitable for packing a non-contiguous View.

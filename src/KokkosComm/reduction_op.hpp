@@ -11,26 +11,26 @@ namespace KokkosComm {
 namespace {
 
 // clang-format off
-#define DECL_REDUCTION_OP(tag)                                                                \
+#define DECL_REDUCTION_OP_FOR(tag)                                                            \
     struct tag##_fn {                                                                         \
         template <CommunicationSpace Cs>                                                      \
-        requires requires(Cs&& cs) { KokkosComm::Impl::tag##_(std::forward<Cs>(cs)); }        \
+        requires requires(Cs&& cs) { tag##_(std::forward<Cs>(cs)); }                          \
         constexpr auto operator()(Cs&& cs) const                                              \
-            noexcept(noexcept(KokkosComm::Impl::tag##_(std::forward<Cs>(cs))))                \
+            noexcept(noexcept(tag##_(std::forward<Cs>(cs))))                                  \
         {                                                                                     \
-            return KokkosComm::Impl::tag##_(std::forward<Cs>(cs));                            \
+            return tag##_(std::forward<Cs>(cs));                                              \
         }                                                                                     \
                                                                                               \
         template <CommunicationSpace Cs>                                                      \
-        requires !requires(Cs&& cs) { KokkosComm::Impl::tag##_(std::forward<Cs>(cs)); }       \
+        requires (!requires(Cs&& cs) { tag##_(std::forward<Cs>(cs)); })                       \
         constexpr auto operator()(Cs&& cs) const                                              \
         {                                                                                     \
-          static_assert(std::is_void_v<Cs>, "KokkosComm::" #Tag                               \
+          static_assert(std::is_void_v<Cs>, "KokkosComm::" #tag                               \
               " : operator not implemented for the provided communication space");            \
         }                                                                                     \ 
-    } inline constexpr Tag{};                                                                 \                                                        
+    } inline constexpr tag{};                                                                 \                                                        
                                                                                               \
-    template<> inline constexpr bool Impl::is_reduction_operator<tag##_fn> = true
+    template<> inline constexpr bool Impl::is_reduction_operator_v<tag##_fn> = true
 }  // namespace
 // clang-format on
 

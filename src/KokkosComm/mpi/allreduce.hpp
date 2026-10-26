@@ -12,6 +12,9 @@
 #include <KokkosComm/traits.hpp>
 #include <KokkosComm/datatype.hpp>
 #include <KokkosComm/reduction_op.hpp>
+
+#include "impl/reduction_op.hpp"
+#include "impl/datatype.hpp"
 #include "mpi_space.hpp"
 #include "communicator.hpp"
 #include "request.hpp"
@@ -129,7 +132,7 @@ namespace Experimental::Impl {
 template <KokkosView SendView, MutKokkosView RecvView, ReductionOperator RedOp, KokkosExecutionSpace ExecSpace>
 struct AllReduce<SendView, RecvView, RedOp, ExecSpace, MpiSpace> {
   static auto execute(Communicator<MpiSpace, ExecSpace>& h, const SendView& sv, RecvView rv) -> Request<MpiSpace> {
-    return mpi::iallreduce(h.exec(), sv, rv, reduction_op<MpiSpace, RedOp>(), h.comm());
+    return mpi::iallreduce(h.exec(), sv, rv, RedOp{}(MpiSpace{}), h.comm());
   }
 };  // namespace Experimental::Impl
 

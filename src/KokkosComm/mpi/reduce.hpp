@@ -182,7 +182,7 @@ template <KokkosView SendView, MutKokkosView RecvView, ReductionOperator RedOp, 
 struct Reduce<SendView, RecvView, RedOp, ExecSpace, MpiSpace> {
   static auto execute(Communicator<MpiSpace, ExecSpace>& h, const SendView sv, RecvView rv, int root)
       -> Request<MpiSpace> {
-    return mpi::ireduce(h.exec(), sv, rv, reduction_op<MpiSpace, RedOp>(), root, h.comm());
+    return mpi::ireduce(h.exec(), sv, rv, RedOp{}(MpiSpace{}), root, h.comm());
   }
 };
 

@@ -24,6 +24,6 @@ struct MpiSpace {
 
 // KokkosComm::MpiSpace is a KokkosComm::CommunicationSpace
 template <>
-inline constexpr bool is_communication_space_v<MpiSpace> = true;
+inline constexpr bool Impl::is_communication_space_v<MpiSpace> = true;
 
 }  // namespace KokkosComm
